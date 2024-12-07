@@ -1,4 +1,6 @@
 from pygame  import *
+from random import randint
+
 init()
 font.init()
 
@@ -33,16 +35,27 @@ class Ball(GameSprite):
     def update(self):
         self.rect.x += self.Vx
         self.rect.y += self.Vy
-        if (self.rect.y <= 0) or (self.rect.y >= win_h):
-            self.Vy = -self.Vy
+        
+        if (self.rect.y <= 0):
+            self.Vy = randint(5, abs(self.Vy) + 5)
+        if (self.rect.y >= win_h):
+            self.Vy = -randint(5, abs(self.Vy) + 5)
+
+        global score1, score2
+
         if sprite.collide_rect(self, player1):
-            self.Vx = abs(self.Vx)
+            self.Vx = (randint(5, abs(self.Vx) + 10))
         if sprite.collide_rect(self, player2):
-            self.Vx = -abs(self.Vx)
+            self.Vx = -randint(5, (abs(self.Vx) + 10))
+
         if self.rect.x <= 0:
-            'плюс один к игроку2'
+            score2 += 1
+            self.Vx = randint(5, (abs(self.Vx) + 10))
+
         if self.rect.x >= win_w:
-            "плюс один к игроку1"
+            score1 += 1
+            self.Vx = -randint(5, (abs(self.Vx) + 10))
+
 
 
 win_w, win_h = 800, 600
@@ -53,11 +66,14 @@ game = True
 finish = False
 FPS = 60
 
+score1 = 0
+score2 = 0
+
 font0 = font.SysFont('Arial', 50)
 clock = time.Clock()
 
-player1 = Player1("МЕЧЖИДА.png", 50, 250,0, 10, 50, 200  )
-player2 = Player2("МЕЧЖИДА.png", 705 , 250,0, 10, 50, 200  )
+player1 = Player1("МЕЧЖИДА.png", 50, 250,0, 10, 100, 300  )
+player2 = Player2("МЕЧЖИДА.png", 705 , 250,0, 10, 100, 300  )
 ball = Ball("nn.png", win_w/2, win_h/2, 5, 5, 100, 50)
 while game:
     display.update()
@@ -67,12 +83,24 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+        elif e.type == KEYDOWN and e.key == K_r:            
+            player1 = Player1("МЕЧЖИДА.png", 50, 250,0, 10, 100, 300  )
+            player2 = Player2("МЕЧЖИДА.png", 705 , 250,0, 10, 100, 300  )
+            ball = Ball("nn.png", win_w/2, win_h/2, 5, 5, 100, 50)
+            score1 = 0
+            score2 = 0
+
     
     player1.update()
     player2.update()
     ball.update()
 
+    image_score = font0.render('Игрок1:' +str(score1), True, (50, 50, 50))
+    image_score2 = font0.render('Игрок2:' +str(score2), True, (50, 50, 50))
+
     win.fill((22,255,255))
     player1.reset()
     player2.reset()
     ball.reset()
+    win.blit(image_score, (350, 50))
+    win.blit(image_score2, (350, 100))
