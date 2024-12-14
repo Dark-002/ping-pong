@@ -41,20 +41,30 @@ class Ball(GameSprite):
         if (self.rect.y >= win_h):
             self.Vy = -randint(5, abs(self.Vy) + 5)
 
-        global score1, score2
+        global score1, score2, player1, player2, ball
 
         if sprite.collide_rect(self, player1):
-            self.Vx = (randint(5, abs(self.Vx) + 10))
+            self.Vx = (randint(5, abs(self.Vx) + 5))
         if sprite.collide_rect(self, player2):
-            self.Vx = -randint(5, (abs(self.Vx) + 10))
+            self.Vx = -randint(5, (abs(self.Vx) + 5))
 
         if self.rect.x <= 0:
-            score2 += 1
-            self.Vx = randint(5, (abs(self.Vx) + 10))
+            score2 += 1 
+            if  (score2 % 5 == 0 and score2 != 0):
+                player2 = Player2("МЕЧЖИДА.png", 705 , 250,0, 10, 100, randint(50, 270)  )
+            if  (score2 % 5 != 0 and score2 != 0):
+                ball = Ball("nn.png", win_w/2, win_h/2, 5, 5, randint(10, 200), randint(10, 100))
+            self.Vx = randint(5, (abs(self.Vx) + 5))
 
         if self.rect.x >= win_w:
-            score1 += 1
-            self.Vx = -randint(5, (abs(self.Vx) + 10))
+            score1 += 1    
+            if (score1 % 5 == 0 and score1 != 0 ):
+                player1 = Player1("МЕЧЖИДА.png", 50, 250,0, 10, 100, randint(50, 270)  )
+            if  (score1 % 5 != 0 and score1 != 0):
+                ball = Ball("nn.png", win_w/2, win_h/2, 5, 5, randint(10, 200), randint(10, 100))
+            self.Vx = -randint(5, (abs(self.Vx) + 5))
+       
+    
 
 
 
@@ -72,9 +82,9 @@ score2 = 0
 font0 = font.SysFont('Arial', 50)
 clock = time.Clock()
 
-player1 = Player1("МЕЧЖИДА.png", 50, 250,0, 10, 100, 300  )
-player2 = Player2("МЕЧЖИДА.png", 705 , 250,0, 10, 100, 300  )
-ball = Ball("nn.png", win_w/2, win_h/2, 5, 5, 100, 50)
+player1 = Player1("МЕЧЖИДА.png", 50, 250,0, 10, 100, 150  )
+player2 = Player2("МЕЧЖИДА.png", 705 , 250,0, 10, 100, 150  )
+ball = Ball("nn.png", win_w/2, win_h/2, 5, 5, 200, 100)
 while game:
     display.update()
 
@@ -89,18 +99,33 @@ while game:
             ball = Ball("nn.png", win_w/2, win_h/2, 5, 5, 100, 50)
             score1 = 0
             score2 = 0
+            finish = False
 
-    
-    player1.update()
-    player2.update()
-    ball.update()
+    if not(finish):
+        player1.update()
+        player2.update()
+        ball.update()
 
-    image_score = font0.render('Игрок1:' +str(score1), True, (50, 50, 50))
-    image_score2 = font0.render('Игрок2:' +str(score2), True, (50, 50, 50))
+        image_score = font0.render('Игрок1:' +str(score1), True, (50, 50, 50))
+        image_score2 = font0.render('Игрок2:' +str(score2), True, (50, 50, 50))
+        image_win_1 = font0.render("Победил Первый игрок", True, (50, 50, 50))
+        image_win_2 = font0.render("Победил Второй игрок", True, (50, 50, 50))
+        image_lose = font0.render('Другой проиграл', True, (50, 50, 50))
 
-    win.fill((22,255,255))
-    player1.reset()
-    player2.reset()
-    ball.reset()
-    win.blit(image_score, (350, 50))
-    win.blit(image_score2, (350, 100))
+
+        win.fill((22,255,255))
+        player1.reset()
+        player2.reset()
+        ball.reset()
+        win.blit(image_score, (50, 50))
+        win.blit(image_score2, (600, 50))
+
+
+        if score1 == 50:
+            win.blit(image_win_1, (200, 100))
+            win.blit(image_lose, (200, 200))
+            finish = True
+        if score2 == 50:
+            win.blit(image_win_2, (200, 100))
+            win.blit(image_lose, (200, 200))
+            finish = True
